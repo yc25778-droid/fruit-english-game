@@ -158,7 +158,7 @@ function buildLevels(){
   return ls;
 }
 
-let levels,ci,cl,items,grid=[],sel=null,score=0,combo=0,wl=0,ws=new Set(),anim=false,comp=new Set();
+let levels,ci,cl,items,grid=[],sel=null,score=0,combo=0,wl=0,ws=new Set(),anim=false,comp=new Set(),lvlDone=false;
 
 const synth=window.speechSynthesis;
 function speak(w,r=0.4){synth.cancel();const u=new SpeechSynthesisUtterance(w);u.lang='en-US';u.rate=r;u.pitch=1.1;const vs=synth.getVoices();const us=vs.find(v=>v.lang==='en-US')||vs.find(v=>v.lang.startsWith('en'));if(us)u.voice=us;synth.speak(u);}
@@ -175,7 +175,7 @@ function buildSelect(){
   }
 }
 
-function start(i){ci=i;cl=levels[i];items=cl.items;score=0;combo=0;wl=0;ws=new Set();sel=null;anim=false;
+function start(i){ci=i;cl=levels[i];items=cl.items;score=0;combo=0;wl=0;ws=new Set();sel=null;anim=false;lvlDone=false;
   updateScores();document.getElementById('levelSelect').style.display='none';
   document.getElementById('gameView').style.display='block';
   document.getElementById('mainTitle').style.display='none';
@@ -195,9 +195,10 @@ function updateLevelUI(){document.getElementById('levelLabel').textContent=`第 
 function updateProgress(){const p=Math.min(100,Math.floor(score/cl.target*100));
   document.getElementById('progressFill').style.width=p+'%';
   document.getElementById('progressText').textContent=`${score}/${cl.target}`;}
-function checkDone(){if(score>=cl.target){comp.add(ci);document.getElementById('levelComplete').style.display='block';
+function checkDone(){if(score>=cl.target&&!lvlDone){lvlDone=true;comp.add(ci);}}
+function showLevelComplete(){document.getElementById('levelComplete').style.display='block';
   if(ci>=9){document.getElementById('completeTitle').textContent='🏆 全部通关！';document.getElementById('completeMsg').textContent=`太棒了！学会了 ${wl} 个单词！`;}
-  else{document.getElementById('completeTitle').textContent='🎉 通关！';document.getElementById('completeMsg').textContent=`第 ${cl.num} 关完成！\n下一关目标：${levels[ci+1].target} 分`;}}}
+  else{document.getElementById('completeTitle').textContent='🎉 通关！';document.getElementById('completeMsg').textContent=`第 ${cl.num} 关完成！\n下一关目标：${levels[ci+1].target} 分`;}}
 function nextLv(){document.getElementById('levelComplete').style.display='none';if(ci<9)start(ci+1);else back();}
 
 function ri(){return Math.floor(Math.random()*items.length);}
@@ -212,7 +213,7 @@ function ck(r,c){if(anim)return;
     if(Math.abs(sr-r)+Math.abs(sc-c)===1)trySwap(sr,sc,r,c);
     else document.getElementById('msg').textContent='要点相邻的哦！';sel=null;}}
 
-async function trySwap(r1,c1,r2,c2){anim=true;[grid[r1][c1],grid[r2][c2]]=[grid[r2][c2],grid[r1][c1]];uc(r1,c1);uc(r2,c2);await sl(200);const m=findM();if(m.size===0){[grid[r1][c1],grid[r2][c2]]=[grid[r2][c2],grid[r1][c1]];uc(r1,c1);uc(r2,c2);document.getElementById('msg').textContent='没有匹配！再试试~';anim=false;return;}combo=0;await proc(m);anim=false;}
+async function trySwap(r1,c1,r2,c2){anim=true;[grid[r1][c1],grid[r2][c2]]=[grid[r2][c2],grid[r1][c1]];uc(r1,c1);uc(r2,c2);await sl(200);const m=findM();if(m.size===0){[grid[r1][c1],grid[r2][c2]]=[grid[r2][c2],grid[r1][c1]];uc(r1,c1);uc(r2,c2);document.getElementById('msg').textContent='没有匹配！再试试~';anim=false;return;}combo=0;await proc(m);anim=false;if(lvlDone){showLevelComplete();}}
 
 function findM(){const m=new Set();for(let r=0;r<ROWS;r++)for(let c=0;c<COLS-2;c++)if(grid[r][c]===grid[r][c+1]&&grid[r][c]===grid[r][c+2]){m.add(`${r},${c}`);m.add(`${r},${c+1}`);m.add(`${r},${c+2}`);}for(let c=0;c<COLS;c++)for(let r=0;r<ROWS-2;r++)if(grid[r][c]===grid[r+1][c]&&grid[r][c]===grid[r+2][c]){m.add(`${r},${c}`);m.add(`${r+1},${c}`);m.add(`${r+2},${c}`);}return m;}
 
