@@ -182,7 +182,10 @@ function buildLevels(){
   return ls;
 }
 
-let levels,ci,cl,items,grid=[],sel=null,score=0,combo=0,wl=0,ws=new Set(),anim=false,comp=new Set(),lvlDone=false;
+let levels,ci,cl,items,grid=[],sel=null,score=0,combo=0,wl=0,ws=new Set(),anim=false,lvlDone=false;
+// Load completed levels from localStorage
+let comp;(()=>{try{comp=new Set(JSON.parse(localStorage.getItem('fruitGameComp')||'[]'));}catch(e){comp=new Set();}})();
+function saveComp(){localStorage.setItem('fruitGameComp',JSON.stringify([...comp]));}
 
 const synth=window.speechSynthesis;
 function speak(w,r=0.4){synth.cancel();const u=new SpeechSynthesisUtterance(w);u.lang='en-US';u.rate=r;u.pitch=1.1;const vs=synth.getVoices();const us=vs.find(v=>v.lang==='en-US')||vs.find(v=>v.lang.startsWith('en'));if(us)u.voice=us;synth.speak(u);}
@@ -193,6 +196,7 @@ function buildSelect(){
     const l=levels[i],d=document.createElement('div');
     d.className='lv-card';if(i>0&&!comp.has(i-1))d.classList.add('locked');
     if(comp.has(i))d.classList.add('completed');
+    d.onclick=()=>{if(!d.classList.contains('locked'))start(i);};
     d.innerHTML=`<div class="lv-num">${l.num}</div><div class="lv-tag">${l.tag}</div><div class="lv-target">${l.target}分</div>`;
     d.onclick=()=>{if(!d.classList.contains('locked'))start(i);};
     el.appendChild(d);
@@ -219,7 +223,7 @@ function updateLevelUI(){document.getElementById('levelLabel').textContent=`第 
 function updateProgress(){const p=Math.min(100,Math.floor(score/cl.target*100));
   document.getElementById('progressFill').style.width=p+'%';
   document.getElementById('progressText').textContent=`${score}/${cl.target}`;}
-function checkDone(){if(score>=cl.target&&!lvlDone){lvlDone=true;comp.add(ci);}}
+function checkDone(){if(score>=cl.target&&!lvlDone){lvlDone=true;comp.add(ci);saveComp();}}
 function showLevelComplete(){document.getElementById('levelComplete').style.display='block';
   if(ci>=11){document.getElementById('completeTitle').textContent='🏆 全部通关！';document.getElementById('completeMsg').textContent=`太棒了！学会了 ${wl} 个单词！`;}
   else{document.getElementById('completeTitle').textContent='🎉 通关！';document.getElementById('completeMsg').textContent=`第 ${cl.num} 关完成！\n下一关目标：${levels[ci+1].target} 分`;}}
