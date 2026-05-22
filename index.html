@@ -227,7 +227,7 @@ function checkDone(){if(score>=cl.target&&!lvlDone){lvlDone=true;comp.add(ci);sa
 function showLevelComplete(){document.getElementById('levelComplete').style.display='block';
   if(ci>=11){document.getElementById('completeTitle').textContent='🏆 全部通关！';document.getElementById('completeMsg').textContent=`太棒了！学会了 ${wl} 个单词！`;}
   else{document.getElementById('completeTitle').textContent='🎉 通关！';document.getElementById('completeMsg').textContent=`第 ${cl.num} 关完成！\n下一关目标：${levels[ci+1].target} 分`;}}
-function nextLv(){document.getElementById('levelComplete').style.display='none';if(ci<9)start(ci+1);else back();}
+function nextLevel(){document.getElementById('levelComplete').style.display='none';if(ci<11)start(ci+1);else back();}
 
 function ri(){return Math.floor(Math.random()*items.length);}
 function initGrid(){grid=[];for(let r=0;r<ROWS;r++){grid[r]=[];for(let c=0;c<COLS;c++){let f;do{f=ri();}while((r>=2&&grid[r-1][c]===f&&grid[r-2][c]===f)||(c>=2&&grid[r][c-1]===f&&grid[r][c-2]===f));grid[r][c]=f;}}}
