@@ -51,6 +51,8 @@ h1{color:#ffd700;font-size:24px;margin-bottom:4px;}
 .lv-tag{font-size:9px;padding:1px 6px;border-radius:8px;font-weight:bold;}
 .tag-fruit{background:rgba(46,204,113,0.3);color:#2ecc71;}
 .tag-furniture{background:rgba(155,89,182,0.3);color:#bb86fc;}
+.tag-stationery{background:rgba(230,126,34,0.3);color:#f0a04b;}
+.tag-body{background:rgba(231,76,60,0.3);color:#f1948a;}
 .progress-wrap{flex:1;max-width:160px;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;}
 .progress-fill{height:100%;background:linear-gradient(90deg,#f39c12,#ffd700);transition:width 0.3s;border-radius:3px;}
 .score-bar{display:flex;justify-content:center;gap:12px;margin-bottom:6px;flex-wrap:wrap;}
@@ -128,7 +130,7 @@ h1{color:#ffd700;font-size:24px;margin-bottom:4px;}
 
 <script>
 const ROWS=8, COLS=8;
-const TARGET_SCORES=[800,1000,1200,1500,1800,2000,2300,2600,3000,3500];
+const TARGET_SCORES=[800,1000,1200,1500,1800,2000,2300,2600,3000,3500,4000,4500];
 
 const FRUIT_POOL=[
   {emoji:'🍎',word:'Apple',color:'#e74c3c'},{emoji:'🍌',word:'Banana',color:'#f1c40f'},
@@ -150,11 +152,33 @@ const FURNITURE_POOL=[
   {emoji:'🕰️',word:'Clock',color:'#a1887f'},{emoji:'🖼️',word:'Picture',color:'#f48fb1'},
 ];
 
+const STATIONERY_POOL=[
+  {emoji:'✏️',word:'Pencil',color:'#f4a460'},{emoji:'📏',word:'Ruler',color:'#5d9cec'},
+  {emoji:'📒',word:'Notebook',color:'#48c9b0'},{emoji:'✂️',word:'Scissors',color:'#f06292'},
+  {emoji:'🖍️',word:'Crayon',color:'#ef5350'},{emoji:'📎',word:'Clip',color:'#b0bec5'},
+  {emoji:'🖊️',word:'Pen',color:'#34495e'},{emoji:'📐',word:'Triangle',color:'#7e57c2'},
+  {emoji:'📕',word:'Book',color:'#e74c3c'},{emoji:'🎒',word:'Backpack',color:'#26a69a'},
+  {emoji:'🖌️',word:'Brush',color:'#ff7043'},{emoji:'📮',word:'Mailbox',color:'#e57373'},
+  {emoji:'🔖',word:'Bookmark',color:'#ffca28'},{emoji:'📋',word:'Clipboard',color:'#8d6e63'},
+];
+
+const BODY_POOL=[
+  {emoji:'👀',word:'Eye',color:'#42a5f5'},{emoji:'👂',word:'Ear',color:'#ef5350'},
+  {emoji:'👃',word:'Nose',color:'#ffca28'},{emoji:'👄',word:'Mouth',color:'#ec407a'},
+  {emoji:'🦷',word:'Tooth',color:'#eceff1'},{emoji:'👋',word:'Hand',color:'#ff8a65'},
+  {emoji:'🦶',word:'Foot',color:'#8d6e63'},{emoji:'💪',word:'Arm',color:'#66bb6a'},
+  {emoji:'🦵',word:'Leg',color:'#5c6bc0'},{emoji:'🧠',word:'Brain',color:'#ab47bc'},
+  {emoji:'❤️',word:'Heart',color:'#e74c3c'},{emoji:'👅',word:'Tongue',color:'#ef5350'},
+  {emoji:'🦴',word:'Bone',color:'#d7ccc8'},{emoji:'👶',word:'Baby',color:'#ffcc80'},
+];
+
 function buildLevels(){
-  const ls=[],fp=[...FRUIT_POOL],furp=[...FURNITURE_POOL];
-  shuffleArray(fp);shuffleArray(furp);
-  for(let i=0;i<5;i++)ls.push({num:i+1,cat:'fruit',tag:'🍎 水果',tc:'tag-fruit',items:fp.slice(i*7,i*7+7),target:TARGET_SCORES[i]});
-  for(let i=0;i<5;i++)ls.push({num:i+6,cat:'furniture',tag:'🪑 家具',tc:'tag-furniture',items:furp.slice(i*7,i*7+7),target:TARGET_SCORES[i+5]});
+  const ls=[],fp=[...FRUIT_POOL],furp=[...FURNITURE_POOL],sp=[...STATIONERY_POOL],bp=[...BODY_POOL];
+  shuffleArray(fp);shuffleArray(furp);shuffleArray(sp);shuffleArray(bp);
+  for(let i=0;i<3;i++)ls.push({num:i+1,cat:'fruit',tag:'🍎 水果',tc:'tag-fruit',items:fp.slice(i*7,i*7+7),target:TARGET_SCORES[i]});
+  for(let i=0;i<3;i++)ls.push({num:i+4,cat:'furniture',tag:'🪑 家具',tc:'tag-furniture',items:furp.slice(i*7,i*7+7),target:TARGET_SCORES[i+3]});
+  for(let i=0;i<3;i++)ls.push({num:i+7,cat:'stationery',tag:'✏️ 文具',tc:'tag-stationery',items:sp.slice(i*7,i*7+7),target:TARGET_SCORES[i+6]});
+  for(let i=0;i<3;i++)ls.push({num:i+10,cat:'body',tag:'👀 身体',tc:'tag-body',items:bp.slice(i*7,i*7+7),target:TARGET_SCORES[i+9]});
   return ls;
 }
 
@@ -197,7 +221,7 @@ function updateProgress(){const p=Math.min(100,Math.floor(score/cl.target*100));
   document.getElementById('progressText').textContent=`${score}/${cl.target}`;}
 function checkDone(){if(score>=cl.target&&!lvlDone){lvlDone=true;comp.add(ci);}}
 function showLevelComplete(){document.getElementById('levelComplete').style.display='block';
-  if(ci>=9){document.getElementById('completeTitle').textContent='🏆 全部通关！';document.getElementById('completeMsg').textContent=`太棒了！学会了 ${wl} 个单词！`;}
+  if(ci>=11){document.getElementById('completeTitle').textContent='🏆 全部通关！';document.getElementById('completeMsg').textContent=`太棒了！学会了 ${wl} 个单词！`;}
   else{document.getElementById('completeTitle').textContent='🎉 通关！';document.getElementById('completeMsg').textContent=`第 ${cl.num} 关完成！\n下一关目标：${levels[ci+1].target} 分`;}}
 function nextLv(){document.getElementById('levelComplete').style.display='none';if(ci<9)start(ci+1);else back();}
 
